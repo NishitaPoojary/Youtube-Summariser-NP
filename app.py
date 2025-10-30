@@ -31,11 +31,13 @@ from transformers import T5ForConditionalGeneration, T5Tokenizer
 # All Funtions
 
 # Gensim Summarization
-from gensim.summarization.summarizer import summarize
-
 def gensim_summarize(text_content, percent):
-    summary = summarize(text_content, ratio=(int(percent) / 100), split=False).replace("\n", " ")
-    return summary
+    try:
+        from gensim.summarization.summarizer import summarize
+        summary = summarize(text_content, ratio=(int(percent) / 100), split=False).replace("\n", " ")
+        return summary
+    except ImportError:
+        return "Gensim is not installed. Please install it to use this summarization method."
 
 # NLTK Summarization
 import nltk
@@ -375,12 +377,13 @@ if sumtype == 'Extractive':
          url_data = urlparse(url)
          id = url_data.query[2::]
 
+
          def generate_transcript(id):
-                 transcript = YouTubeTranscriptApi.get_transcript(id)
+                 transcript = YouTubeTranscriptApi().fetch(id)
                  script = ""
 
                  for text in transcript:
-                         t = text["text"]
+                         t = text.text
                          if t != '[Music]':
                                  script += t + " "
 
@@ -475,12 +478,13 @@ elif sumtype == 'Abstractive (T5 Algorithm)':
           url_data = urlparse(url)
           id = url_data.query[2::]
 
+
           def generate_transcript(id):
-               transcript = YouTubeTranscriptApi.get_transcript(id)
+               transcript = YouTubeTranscriptApi().fetch(id)
                script = ""
 
                for text in transcript:
-                    t = text["text"]
+                    t = text.text
                     if t != '[Music]':
                          script += t + " "
 
@@ -531,16 +535,4 @@ text-align: justify;
 #-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x-x
 
 
-# Add Sidebar Info
-st.sidebar.info(
-        dedent(
-            """
-        This web [app][#streamlit-app] is made by\n
-        [Soman Yadav][#linkedin2]
-        
-        [#linkedin2]: https://www.linkedin.com/in/somanyadav/
-        [#streamlit-app]: https://github.com/somanyadav/Youtube-Summariser/
-        
-        """
-        )
-    )
+
